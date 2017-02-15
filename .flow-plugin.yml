@@ -1,0 +1,26 @@
+
+name: objc_build
+version: 0.0.1
+language: objc
+description: Objc build task
+public: true
+tags:
+  - objc
+  - build
+inputs:
+  - name: FLOW_IOS_COMPILE_WORKSPACE
+    editable: true
+  - name: FLOW_IOS_COMPILE_PROJECT
+    editable: true
+  - name: FLOW_IOS_COMPILE_SCHEME
+    editable: true
+  - name: FLOW_IOS_COMPILE_SDK
+    editable: true
+  - name: FLOW_IOS_COMPILE_CONFIGURATION
+    editable: true
+outputs:
+script_path: ./run.sh  
+  
+template: |  
+  
+  
