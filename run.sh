@@ -4,37 +4,53 @@ xcodeproj=`find ./ -maxdepth 1 -name "*.xcodeproj"`
 if [ ! $xcodeproj ]; then
  echo ".xcodeproj not found"
 else
-  #Find DevelopmentTeam in xcodeproj
+
+  # Check shared sheme
+  xcodeproj_shared_scheme_path=$xcodeproj/xcshareddata/xcschemes
+  if [[ -d $xcodeproj_shared_scheme_path ]]; then
+    num_of_shared_scheme=`ls $xcodeproj_shared_scheme_path | grep -c ".xcscheme"`
+    if [ $num_of_shared_scheme -eq 0 ]; then
+      echo '=== No shared scheme ==='
+      exit 1
+    else
+      echo "Shared scheme were founded"
+    fi
+  else
+    echo '=== No shared scheme ==='
+    exit 1
+  fi
+
+  # Find DevelopmentTeam in xcodeproj
   TEAM_ARR=($(awk -F '=' '/DevelopmentTeam/ {print $2}' "$xcodeproj"/project.pbxproj))
-  #Replace DevelopmentTeam value to none
+  # Replace DevelopmentTeam value to none
   for s in ${TEAM_ARR[@]}
   do
     cmd="/DevelopmentTeam  = ${s}/DevelopmentTeam = \"\";/g"
     sed -i '' s"$cmd" "$xcodeproj"/project.pbxproj
   done
 
-  #Find PROVISIONING_PROFILE in xcodeproj
+  # Find PROVISIONING_PROFILE in xcodeproj
   PROVISIONING_PROFILE_ARR=($(awk -F '=' '/PROVISIONING_PROFILE/ {print $2}' "$xcodeproj"/project.pbxproj))
-  #Replace PROVISIONING_PROFILE value to none
+  # Replace PROVISIONING_PROFILE value to none
   for s in ${PROVISIONING_PROFILE_ARR[@]}
   do
    cmd="/PROVISIONING_PROFILE = ${s}/PROVISIONING_PROFILE = \"\";/g"
    sed -i '' s"$cmd" "$xcodeproj"/project.pbxproj
   done
 
-  #Find DEVELOPMENT_TEAM in xcodeproj
+  # Find DEVELOPMENT_TEAM in xcodeproj
   DEVELOPMENT_TEAM_ARR=($(awk -F '=' '/DEVELOPMENT_TEAM/ {print $2}' "$xcodeproj"/project.pbxproj))
-  #Replace DEVELOPMENT_TEAM value to none
+  # Replace DEVELOPMENT_TEAM value to none
   for s in ${DEVELOPMENT_TEAM_ARR[@]}
   do
    cmd="/DEVELOPMENT_TEAM = ${s}/DEVELOPMENT_TEAM = \"\";/g"
    sed -i '' s"$cmd" "$xcodeproj"/project.pbxproj
   done
 
-  #Replace ProvisioningStyle 'Automatic' to 'Manual'
+  # Replace ProvisioningStyle 'Automatic' to 'Manual'
   sed -i '' s'/ProvisioningStyle = Automatic/ProvisioningStyle = Manual/g' "$xcodeproj"/project.pbxproj
 
-  #Replace PROVISIONING_PROFILE_SPECIFIER to none
+  # Replace PROVISIONING_PROFILE_SPECIFIER to none
   sed -i -e "/PROVISIONING_PROFILE_SPECIFIER/d" "$xcodeproj"/project.pbxproj
 fi
 
