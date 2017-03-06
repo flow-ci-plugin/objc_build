@@ -11,12 +11,14 @@ else
     num_of_shared_scheme=`ls $xcodeproj_shared_scheme_path | grep -c ".xcscheme"`
     if [ $num_of_shared_scheme -eq 0 ]; then
       echo '=== No shared scheme ==='
+      echo 'Please share your scheme in Xcode: Product > Scheme > Manage Schemes > Check Shared'
       exit 1
     else
       echo "Shared scheme were founded"
     fi
   else
     echo '=== No shared scheme ==='
+    echo 'Please share your scheme in Xcode: Product > Scheme > Manage Schemes > Check Shared'
     exit 1
   fi
 
