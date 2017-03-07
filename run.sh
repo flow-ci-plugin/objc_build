@@ -59,7 +59,6 @@ set_scheme() {
 set_destination() {
   # Set build destination
   if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
-    export FLOW_IOS_COMPILE_SDK="iphoneos"
     params="$params -sdk $FLOW_IOS_COMPILE_SDK" 
   else 
     params="$params -destination 'platform=iOS Simulator,OS=10.1,name=iPhone 6'"
@@ -89,6 +88,7 @@ set_code_identity () {
   fi
 }
 
+export FLOW_IOS_COMPILE_SDK="iphoneos"
 xcodeproj=($(find ./ -maxdepth 1 -name "*.xcodeproj"))
 xcodeproj_shared_scheme_path=$xcodeproj/xcshareddata/xcschemes
 
