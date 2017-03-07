@@ -1,26 +1,103 @@
 cd $FLOW_CURRENT_PROJECT_PATH
 
-xcodeproj=`find ./ -maxdepth 1 -name "*.xcodeproj"`
-if [ ! $xcodeproj ]; then
- echo ".xcodeproj not found"
-else
-
-  # Check shared sheme
-  xcodeproj_shared_scheme_path=$xcodeproj/xcshareddata/xcschemes
+check_shared_scheme() {
+  # check shared scheme
+  echo $xcodeproj_shared_scheme_path
   if [[ -d $xcodeproj_shared_scheme_path ]]; then
     num_of_shared_scheme=`ls $xcodeproj_shared_scheme_path | grep -c ".xcscheme"`
     if [ $num_of_shared_scheme -eq 0 ]; then
-      echo '=== No shared scheme ==='
-      echo 'Please share your scheme in Xcode: Product > Scheme > Manage Schemes > Check Shared'
+      echo ' === No shared scheme'
+      echo ' === Please share your scheme in Xcode: Product > Scheme > Manage Schemes > Check Shared'
       exit 1
-    else
-      echo "Shared scheme were founded"
     fi
   else
-    echo '=== No shared scheme ==='
-    echo 'Please share your scheme in Xcode: Product > Scheme > Manage Schemes > Check Shared'
+    echo ' === No shared scheme'
+    echo ' === Please share your scheme in Xcode: Product > Scheme > Manage Schemes > Check Shared'
     exit 1
   fi
+}
+
+set_project_and_workspace() {
+  # Check workspace definition
+  if [ -n "$FLOW_IOS_COMPILE_WORKSPACE" ]; then
+    params="$params -workspace '$FLOW_IOS_COMPILE_WORKSPACE'"
+  fi
+
+  # Check project definition
+  if [ -n "$FLOW_IOS_COMPILE_PROJECT" ]; then
+    params="$params -project '$FLOW_IOS_COMPILE_PROJECT'"
+  fi
+
+  # Set default project while workspace or project not defined
+  if [ -z "$FLOW_IOS_COMPILE_WORKSPACE"] && [ -z "$FLOW_IOS_COMPILE_PROJECT" ]; then
+    params="$params -project '${xcodeproj:3}'"
+  fi
+}
+
+set_scheme() {
+  # Set scheme definition
+  if [ -n "$FLOW_IOS_COMPILE_SCHEME" ]; then
+    params="$params -scheme '$FLOW_IOS_COMPILE_SCHEME'"
+  else
+    echo $xcodeproj_shared_scheme_path
+
+    scheme_array=($(ls -l $xcodeproj_shared_scheme_path | grep ".xcscheme" | awk '{ print $(NF-0) }'))
+    scheme_size=${#scheme_array[@]}
+
+    scheme_name=${scheme_array[$scheme_size - 1]}
+    scheme_name=${scheme_name/.xcscheme/}
+    params="$params -scheme ${scheme_name}"
+
+    if [ $scheme_size -gt 1 ]; then
+      echo ' === Multiple shared schemes were founded'
+      echo " === ${scheme_array[@]}"
+      echo " === flow.ci will use the scheme: '${scheme_name}' as default"
+    fi
+  fi
+}
+
+set_destination() {
+  # Set build destination
+  if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
+    export FLOW_IOS_COMPILE_SDK="iphoneos"
+    params="$params -sdk $FLOW_IOS_COMPILE_SDK" 
+  else 
+    params="$params -destination 'platform=iOS Simulator,OS=10.1,name=iPhone 6'"
+  fi
+}
+
+set_configuration() {
+  # Set configuration definition
+  if [ -n "$FLOW_IOS_COMPILE_CONFIGURATION" ]; then
+    params="$params -configuration '$FLOW_IOS_COMPILE_CONFIGURATION'"
+  else
+    params="$params -configuration 'Release'"
+    export FLOW_IOS_COMPILE_CONFIGURATION="Release"
+  fi
+}
+
+set_code_identity () {
+  # Set code identity definition
+  if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
+    params="$params CODE_SIGN_IDENTITY=\"$FLOW_IOS_CODE_SIGN_IDENTITY\""
+  else
+    params="$params CODE_SIGN_IDENTITY='iPhone Distribution'"
+  fi
+
+  if [ -n "$FLOW_MOBILEPROVISION_UUID" ]; then
+    params="$params PROVISIONING_PROFILE=$FLOW_MOBILEPROVISION_UUID"
+  fi
+}
+
+xcodeproj=($(find ./ -maxdepth 1 -name "*.xcodeproj"))
+xcodeproj_shared_scheme_path=$xcodeproj/xcshareddata/xcschemes
+
+if [ ! $xcodeproj ]; then
+ echo ".xcodeproj not found"
+ exit 1
+else
+
+  check_shared_scheme
 
   # Find DevelopmentTeam in xcodeproj
   TEAM_ARR=($(awk -F '=' '/DevelopmentTeam/ {print $2}' "$xcodeproj"/project.pbxproj))
@@ -56,16 +133,6 @@ else
   sed -i -e "/PROVISIONING_PROFILE_SPECIFIER/d" "$xcodeproj"/project.pbxproj
 fi
 
-export FLOW_IOS_COMPILE_SDK="iphoneos"
-params="-sdk $FLOW_IOS_COMPILE_SDK"
-
-if [ -n "$FLOW_IOS_COMPILE_WORKSPACE" ]; then
-    params="$params -workspace $FLOW_IOS_COMPILE_WORKSPACE"
-fi
-
-if [ -n "$FLOW_IOS_COMPILE_PROJECT" ]; then
-    params="$params -project $FLOW_IOS_COMPILE_PROJECT"
-fi
 
 # 暂时不支持 -target
 # if [ -n "$FLOW_IOS_COMPILE_TARGET" ]; then
@@ -73,28 +140,14 @@ fi
 #     build_out_dir=$FLOW_IOS_COMPILE_TARGET
 # fi
 
-if [ -n "$FLOW_IOS_COMPILE_SCHEME" ]; then
-    params="$params -scheme $FLOW_IOS_COMPILE_SCHEME"
-fi
-
-if [ -n "$FLOW_IOS_COMPILE_CONFIGURATION" ]; then
-    params="$params -configuration $FLOW_IOS_COMPILE_CONFIGURATION"
-else
-    params="$params -configuration Release"
-    export FLOW_IOS_COMPILE_CONFIGURATION="Release"
-fi
-
-if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
-    params="$params CODE_SIGN_IDENTITY=\"$FLOW_IOS_CODE_SIGN_IDENTITY\""
-fi
-
-if [ -n "$FLOW_MOBILEPROVISION_UUID" ]; then
-    params="$params PROVISIONING_PROFILE=$FLOW_MOBILEPROVISION_UUID"
-fi
+set_project_and_workspace
+set_scheme
+set_destination
+set_configuration
+set_code_identity
 
 export FLOW_OUTPUT_DIR=${FLOW_WORKSPACE}/output
-
-cmd="xcodebuild build $params SYMROOT=${FLOW_OUTPUT_DIR} | tee ${FLOW_OUTPUT_DIR}/xcodebuild.log | xcpretty -s"
+cmd="xcodebuild $params SYMROOT=${FLOW_OUTPUT_DIR} | tee ${FLOW_OUTPUT_DIR}/xcodebuild.log | xcpretty -s"
 echo $cmd
 eval $cmd
 
