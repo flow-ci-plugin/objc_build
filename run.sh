@@ -86,6 +86,19 @@ set_code_identity () {
   if [ -n "$FLOW_MOBILEPROVISION_UUID" ]; then
     params="$params PROVISIONING_PROFILE=$FLOW_MOBILEPROVISION_UUID"
   fi
+  
+  for i in `seq 1 3`
+  do
+    identity=FLOW_IOS_CODE_SIGN_IDENTITY_$i
+    if [ -n "${!identity}" ]; then
+      params="$params CODE_SIGN_IDENTITY_$i=\"${!identity}\""
+    fi
+    
+    uuid=FLOW_MOBILEPROVISION_UUID_$i
+    if [ -n "${!uuid}" ]; then
+      params="$params PROVISIONING_PROFILE_$i=${!uuid}"
+    fi
+  done
 }
 
 export FLOW_IOS_COMPILE_SDK="iphoneos"
