@@ -46,7 +46,7 @@ set_scheme() {
 
     scheme_name=${scheme_array[$scheme_size - 1]}
     scheme_name=${scheme_name/.xcscheme/}
-    params="$params -scheme ${scheme_name}"
+    params="$params -scheme '${scheme_name}'"
 
     if [ $scheme_size -gt 1 ]; then
       echo ' === Multiple shared schemes were founded'
