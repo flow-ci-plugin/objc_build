@@ -26,12 +26,15 @@ set_project_and_workspace() {
   # Check project definition
   if [ -n "$FLOW_IOS_COMPILE_PROJECT" ]; then
     params="$params -project '$FLOW_IOS_COMPILE_PROJECT'"
+    echo " ===1 $FLOW_IOS_COMPILE_PROJECT"
   fi
 
   # Set default project while workspace or project not defined
   if [ -z "$FLOW_IOS_COMPILE_WORKSPACE"] && [ -z "$FLOW_IOS_COMPILE_PROJECT" ]; then
     params="$params -project '${xcodeproj:3}'"
+    echo " ===2 ${xcodeproj:3}"
   fi
+  
 }
 
 set_scheme() {
