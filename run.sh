@@ -32,7 +32,7 @@ set_project_and_workspace() {
   # Set default project while workspace or project not defined
   if [ -z "$FLOW_IOS_COMPILE_WORKSPACE"] && [ -z "$FLOW_IOS_COMPILE_PROJECT" ]; then
     params="$params -project '${xcodeproj:3}'"
-    echo " ===2 ${xcodeproj:3}"
+    export FLOW_IOS_COMPILE_PROJECT=${xcodeproj:3}
   fi
   
 }
