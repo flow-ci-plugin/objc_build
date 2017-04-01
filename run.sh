@@ -26,12 +26,24 @@ set_project_and_workspace() {
   # Check project definition
   if [ -n "$FLOW_IOS_COMPILE_PROJECT" ]; then
     params="$params -project '$FLOW_IOS_COMPILE_PROJECT'"
+    echo " ===1 $FLOW_IOS_COMPILE_PROJECT"
   fi
 
   # Set default project while workspace or project not defined
   if [ -z "$FLOW_IOS_COMPILE_WORKSPACE"] && [ -z "$FLOW_IOS_COMPILE_PROJECT" ]; then
-    params="$params -project '${xcodeproj:3}'"
+
+    if [ -n "$xcworkspace" ]; then
+      export FLOW_IOS_COMPILE_WORKSPACE=${xcworkspace:3}
+      params="$params -workspace '$FLOW_IOS_COMPILE_WORKSPACE'"
+      echo " === flow.ci will use workspace'$FLOW_IOS_COMPILE_WORKSPACE' as build argument ==="
+
+    else
+      export FLOW_IOS_COMPILE_PROJECT=${xcodeproj:3}
+      params="$params -project '$FLOW_IOS_COMPILE_PROJECT'"
+      echo " === flow.ci will use project '$FLOW_IOS_COMPILE_PROJECT' as build argument ==="
+    fi
   fi
+  
 }
 
 set_scheme() {
@@ -49,10 +61,11 @@ set_scheme() {
     params="$params -scheme '${scheme_name}'"
 
     if [ $scheme_size -gt 1 ]; then
-      echo ' === Multiple shared schemes were founded'
-      echo " === ${scheme_array[@]}"
-      echo " === flow.ci will use the scheme: '${scheme_name}' as default"
+      echo ' === Multiple shared schemes were founded === '
+      echo " === ${scheme_array[@]} === "
+      echo " === flow.ci will use the scheme: '${scheme_name}' as default === "
     fi
+    export FLOW_IOS_COMPILE_SCHEME=$scheme_name
   fi
 }
 
@@ -77,20 +90,17 @@ set_configuration() {
 
 set_code_identity () {
   # Set code identity definition
-  if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
-    params="$params CODE_SIGN_IDENTITY=\"$FLOW_IOS_CODE_SIGN_IDENTITY\""
-  else
     params="$params CODE_SIGN_IDENTITY='iPhone Distribution'"
-  fi
-
-  if [ -n "$FLOW_MOBILEPROVISION_UUID" ]; then
-    params="$params PROVISIONING_PROFILE=$FLOW_MOBILEPROVISION_UUID"
-  fi
 }
 
 export FLOW_IOS_COMPILE_SDK="iphoneos"
+
+# find xcodeproj
 xcodeproj=($(find ./ -maxdepth 1 -name "*.xcodeproj"))
 xcodeproj_shared_scheme_path=$xcodeproj/xcshareddata/xcschemes
+
+# find workspace
+xcworkspace=($(find ./ -maxdepth 1 -name "*.xcworkspace"))
 
 if [ ! $xcodeproj ]; then
  echo ".xcodeproj not found"
