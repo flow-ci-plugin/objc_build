@@ -74,7 +74,7 @@ set_destination() {
   if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
     params="$params -sdk $FLOW_IOS_COMPILE_SDK" 
   else 
-    params="$params -destination 'platform=iOS Simulator,OS=10.1,name=iPhone 6'"
+    params="$params -destination 'platform=iOS Simulator,name=iPhone 6'"
   fi
 }
 
