@@ -88,9 +88,16 @@ set_configuration() {
   fi
 }
 
-set_code_identity () {
-  # Set code identity definition
+set_code_identity () {  # Set code identity definition
+  if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
+    params="$params CODE_SIGN_IDENTITY=\"$FLOW_IOS_CODE_SIGN_IDENTITY\""
+  else
     params="$params CODE_SIGN_IDENTITY='iPhone Distribution'"
+  fi
+
+  if [ -n "$FLOW_MOBILEPROVISION_UUID" ]; then
+    params="$params PROVISIONING_PROFILE=$FLOW_MOBILEPROVISION_UUID"
+  fi
 }
 
 export FLOW_IOS_COMPILE_SDK="iphoneos"
