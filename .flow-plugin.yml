@@ -7,34 +7,12 @@ public: true
 tags:
   - objc
   - build
+
+# use exising template for input
 inputs:
-  - name: FLOW_IOS_COMPILE_WORKSPACE
-    editable: true
-    desc_cn: ".xcworkspace 的文件名称 (选填)"
-    desc_en: ".xcworkspace file name (optional)"
-    
-  - name: FLOW_IOS_COMPILE_PROJECT
-    editable: true
-    desc_cn: ".xcodeproj 的文件名称 (选填)"
-    desc_en: ".xcodeproj file name (optional)"
-    
-  - name: FLOW_IOS_COMPILE_SCHEME
-    editable: true
-    desc_cn: "scheme 的名称 (选填), scheme 必须从 Xcode 中设置共享"
-    desc_en: "scheme name (optional), scheme must be shared from Xcode"
-    
-  - name: FLOW_IOS_COMPILE_SDK
-    editable: false
-    desc_cn: "scheme 的名称 (选填), scheme 必须从 Xcode 中设置共享"
-    desc_en: "scheme name (optional), scheme must be shared from Xcode"
-    default: "Latest iOS"
-    
-  - name: FLOW_IOS_COMPILE_CONFIGURATION
-    editable: true
-    desc_cn: "自定义的名称，或 Debug/Release"
-    desc_en: "Customized configuration name, or Debug/Release"
     
 outputs:
+
 script_path: ./run.sh  
   
 template: |  
