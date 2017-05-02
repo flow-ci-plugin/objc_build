@@ -9,7 +9,7 @@ tags:
   - build
 
 # use exising template for input
-inputs:
+# inputs:
     
 outputs:
 
