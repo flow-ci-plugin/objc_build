@@ -127,7 +127,7 @@ set_code_identity
 export FLOW_OUTPUT_DIR=${FLOW_WORKSPACE}/output
 
 if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
-  cmd="fastlane gym $fastlane_params --codesigning_identity '$FLOW_IOS_CODE_SIGN_IDENTITY' --silent --clean"
+  cmd="fastlane gym $fastlane_params --codesigning_identity '$FLOW_IOS_CODE_SIGN_IDENTITY'"
 else
   cmd="xcodebuild $params SYMROOT=${FLOW_OUTPUT_DIR} | tee ${FLOW_OUTPUT_DIR}/xcodebuild.log | xcpretty -s"
 fi
