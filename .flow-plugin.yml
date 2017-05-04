@@ -22,14 +22,8 @@ inputs:
     
   - name: FLOW_IOS_COMPILE_SCHEME		
     editable: true		
-    desc_cn: "scheme 的名称 (选填), scheme 必须从 Xcode 中设置共享"		
-    desc_en: "scheme name (optional), scheme must be shared from Xcode"
-    
-  - name: FLOW_IOS_COMPILE_SDK		
-    editable: false		
-    desc_cn: "scheme 的名称 (选填), scheme 必须从 Xcode 中设置共享"		
-    desc_en: "scheme name (optional), scheme must be shared from Xcode"		
-    default: "Latest iOS"
+    desc_cn: "scheme 的名称 (选填)"		
+    desc_en: "scheme name (optional)"
     
   - name: FLOW_IOS_COMPILE_CONFIGURATION		
     editable: true		
