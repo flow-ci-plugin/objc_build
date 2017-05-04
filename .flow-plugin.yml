@@ -2,7 +2,7 @@
 name: objc_build
 version: 0.0.1
 language: objc
-description: Objc build task
+description: "iOS 编译，默认使用模拟器编译，如果上传证书，编译并构建 ipa 包"
 public: true
 tags:
   - objc
