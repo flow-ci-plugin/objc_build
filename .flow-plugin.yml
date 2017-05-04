@@ -8,6 +8,7 @@ tags:
   - objc
   - build
 
+# use exising template for input
 inputs:
   - name: FLOW_IOS_COMPILE_WORKSPACE		
     editable: true		    
