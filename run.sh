@@ -75,8 +75,8 @@ set_scheme() {
 }
 
 set_destination() {
-  # Set build destination 
-  params="$params -destination 'platform=iOS Simulator,name=iPhone 6'"
+  # Set build sdk 
+  params="$params -sdk iphonesimulator"
 }
 
 set_configuration() {
@@ -92,7 +92,7 @@ set_configuration() {
 
 set_code_identity () {
   # Set code identity definition
-  params="$params CODE_SIGN_IDENTITY=''"
+  params="$params CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY='' CODE_SIGNING_ALLOWED=NO"
 }
 
 set_export_method () {
@@ -101,8 +101,6 @@ set_export_method () {
     fastlane_params="$fastlane_params --export_method $FLOW_IOS_EXPORT_METHOD" 
   fi
 }
-
-export FLOW_IOS_COMPILE_SDK="iphoneos"
 
 # find xcodeproj
 xcodeproj=($(find ./ -maxdepth 1 -name "*.xcodeproj"))
