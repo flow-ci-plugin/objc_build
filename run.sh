@@ -135,6 +135,7 @@ set_export_method
 export FLOW_OUTPUT_DIR=${FLOW_WORKSPACE}/output
 
 if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
+  FASTLANE_OPT_OUT_USAGE=1
   cmd="fastlane gym $fastlane_params"
 else
   cmd="xcodebuild $params SYMROOT=${FLOW_OUTPUT_DIR} | tee ${FLOW_OUTPUT_DIR}/xcodebuild.log | xcpretty -s"
