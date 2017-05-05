@@ -29,6 +29,21 @@ inputs:
     editable: true		
     desc_cn: "自定义的名称，或 Debug/Release"		
     desc_en: "Customized configuration name, or Debug/Release"
+
+  - name: FLOW_IOS_EXPORT_METHOD
+    editable: true
+    desc_cn: "Xcode 打包方式"
+    desc_en: "how Xcode should export the archive"
+    category: select
+    options:
+      - app-store=app-store
+      - ad-hoc=ad-hoc
+      - package=package
+      - enterprise=enterprise
+      - development=development
+      - developer-id=developer-id
+    default: app-store
+
     
 outputs:
 

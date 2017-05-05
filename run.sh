@@ -92,7 +92,14 @@ set_configuration() {
 
 set_code_identity () {
   # Set code identity definition
-    params="$params CODE_SIGN_IDENTITY=''"
+  params="$params CODE_SIGN_IDENTITY=''"
+}
+
+set_export_method () {
+  # for Valid values are: app-store, ad-hoc, package, enterprise, development, developer-id 
+  if [ -n "$FLOW_IOS_EXPORT_METHOD" ] ; then
+    fastlane_params="$fastlane_params --export_method $FLOW_IOS_EXPORT_METHOD" 
+  fi
 }
 
 export FLOW_IOS_COMPILE_SDK="iphoneos"
@@ -123,11 +130,12 @@ set_scheme
 set_destination
 set_configuration
 set_code_identity
+set_export_method
 
 export FLOW_OUTPUT_DIR=${FLOW_WORKSPACE}/output
 
 if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
-  cmd="fastlane gym $fastlane_params --codesigning_identity '$FLOW_IOS_CODE_SIGN_IDENTITY'"
+  cmd="fastlane gym $fastlane_params"
 else
   cmd="xcodebuild $params SYMROOT=${FLOW_OUTPUT_DIR} | tee ${FLOW_OUTPUT_DIR}/xcodebuild.log | xcpretty -s"
 fi
