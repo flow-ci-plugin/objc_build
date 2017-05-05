@@ -32,7 +32,7 @@ inputs:
 
   - name: FLOW_IOS_EXPORT_METHOD
     editable: true
-    desc_cn: "Xcode 打包方式"
+    desc_cn: "Xcode 打包方式(上传证书后有效)"
     desc_en: "how Xcode should export the archive"
     category: select
     options:
