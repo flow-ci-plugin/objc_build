@@ -136,7 +136,7 @@ export FLOW_OUTPUT_DIR=${FLOW_WORKSPACE}/output
 
 if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
   export FASTLANE_OPT_OUT_USAGE=1
-  cmd="fastlane gym $fastlane_params --output_directory $FLOW_OUTPUT_DIR"
+  cmd="fastlane gym $fastlane_params --archive_path $FLOW_OUTPUT_DIR --skip_package_ipa"
 else
   cmd="xcodebuild $params SYMROOT=${FLOW_OUTPUT_DIR} | tee ${FLOW_OUTPUT_DIR}/xcodebuild.log | xcpretty -s"
 fi
