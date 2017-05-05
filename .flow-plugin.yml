@@ -42,7 +42,7 @@ inputs:
       - enterprise=enterprise
       - development=development
       - developer-id=developer-id
-    default: app-store
+    default: development
 
     
 outputs:

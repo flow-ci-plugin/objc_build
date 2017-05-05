@@ -21,13 +21,13 @@ set_project_and_workspace() {
   # Check workspace definition
   if [ -n "$FLOW_IOS_COMPILE_WORKSPACE" ]; then
     params="$params -workspace '$FLOW_IOS_COMPILE_WORKSPACE'"
-    fastlane_params="--workspace '$FLOW_IOS_COMPILE_WORKSPACE'"
+    fastlane_params="--workspace $FLOW_IOS_COMPILE_WORKSPACE"
   fi
 
   # Check project definition
   if [ -n "$FLOW_IOS_COMPILE_PROJECT" ]; then
     params="$params -project '$FLOW_IOS_COMPILE_PROJECT'"
-    fastlane_params="--project '$FLOW_IOS_COMPILE_PROJECT'"
+    fastlane_params="--project $FLOW_IOS_COMPILE_PROJECT"
   fi
 
   # Set default project while workspace or project not defined
@@ -36,13 +36,13 @@ set_project_and_workspace() {
     if [ -n "$xcworkspace" ]; then
       export FLOW_IOS_COMPILE_WORKSPACE=${xcworkspace:3}
       params="$params -workspace '$FLOW_IOS_COMPILE_WORKSPACE'"
-      fastlane_params="--workspace '$FLOW_IOS_COMPILE_WORKSPACE'"
+      fastlane_params="--workspace $FLOW_IOS_COMPILE_WORKSPACE"
       echo " === flow.ci will use workspace'$FLOW_IOS_COMPILE_WORKSPACE' as build argument ==="
 
     else
       export FLOW_IOS_COMPILE_PROJECT=${xcodeproj:3}
       params="$params -project '$FLOW_IOS_COMPILE_PROJECT'"
-      fastlane_params="--project '$FLOW_IOS_COMPILE_PROJECT'"
+      fastlane_params="--project $FLOW_IOS_COMPILE_PROJECT"
       echo " === flow.ci will use project '$FLOW_IOS_COMPILE_PROJECT' as build argument ==="
     fi
   fi
@@ -71,7 +71,7 @@ set_scheme() {
     export FLOW_IOS_COMPILE_SCHEME=$scheme_name
   fi
 
-  fastlane_params="$fastlane_params --scheme '$FLOW_IOS_COMPILE_SCHEME'"
+  fastlane_params="$fastlane_params --scheme $FLOW_IOS_COMPILE_SCHEME"
 }
 
 set_destination() {
@@ -82,7 +82,7 @@ set_destination() {
 set_configuration() {
   # Set configuration definition
   if [ -n "$FLOW_IOS_COMPILE_CONFIGURATION" ]; then
-    fastlane_params="$fastlane_params --configuration '$FLOW_IOS_COMPILE_CONFIGURATION'"
+    fastlane_params="$fastlane_params --configuration $FLOW_IOS_COMPILE_CONFIGURATION"
     params="$params -configuration '$FLOW_IOS_COMPILE_CONFIGURATION'"
   else
     params="$params -configuration 'Release'"
@@ -136,13 +136,15 @@ export FLOW_OUTPUT_DIR=${FLOW_WORKSPACE}/output
 
 if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
   export FASTLANE_OPT_OUT_USAGE=1
-  cmd="fastlane gym $fastlane_params --archive_path $FLOW_OUTPUT_DIR --skip_package_ipa"
+  export IPA_NAME=${FLOW_IOS_COMPILE_CONFIGURATION}-${FLOW_USER_ID}-${FLOW_PROJECT_ID}.ipa
+  export FIR_APP_PATH=${FLOW_OUTPUT_DIR}/${IPA_NAME}
+
+  fastlane gym $fastlane_params --output_directory ${FLOW_OUTPUT_DIR} --output_name ${IPA_NAME}
 else
   cmd="xcodebuild $params SYMROOT=${FLOW_OUTPUT_DIR} | tee ${FLOW_OUTPUT_DIR}/xcodebuild.log | xcpretty -s"
+  echo $cmd
+  eval $cmd
+  
+  # fix xcodebuild 失败 但 $? 为 0
+  grep -o "BUILD SUCCEEDED" ${FLOW_OUTPUT_DIR}/xcodebuild.log &> /dev/null
 fi
-
-echo $cmd
-eval $cmd
-
-# fix xcodebuild 失败 但 $? 为 0
-grep -o "BUILD SUCCEEDED" ${FLOW_OUTPUT_DIR}/xcodebuild.log &> /dev/null
