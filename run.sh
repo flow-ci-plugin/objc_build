@@ -134,7 +134,7 @@ export FLOW_OUTPUT_DIR=${FLOW_WORKSPACE}/output
 
 if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
   export FASTLANE_OPT_OUT_USAGE=1
-  export IPA_NAME=${FLOW_IOS_COMPILE_CONFIGURATION}-${FLOW_USER_ID}-${FLOW_PROJECT_ID}.ipa
+  export IPA_NAME=${FLOW_IOS_COMPILE_CONFIGURATION}-${FLOW_PROJECT_ID}-${FLOW_EVENT_NUMBER}.ipa
   export FIR_APP_PATH=${FLOW_OUTPUT_DIR}/${IPA_NAME}
 
   fastlane gym $fastlane_params --output_name ${IPA_NAME} --silent
