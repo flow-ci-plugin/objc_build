@@ -31,7 +31,7 @@ set_project_and_workspace() {
   fi
 
   # Set default project while workspace or project not defined
-  if [ -z "$FLOW_IOS_COMPILE_WORKSPACE"] && [ -z "$FLOW_IOS_COMPILE_PROJECT" ]; then
+  if [ -z "$FLOW_IOS_COMPILE_WORKSPACE" ] && [ -z "$FLOW_IOS_COMPILE_PROJECT" ]; then
 
     if [ -n "$xcworkspace" ]; then
       export FLOW_IOS_COMPILE_WORKSPACE=${xcworkspace:3}
