@@ -1,5 +1,7 @@
 cd $FLOW_CURRENT_PROJECT_PATH
-
+echo "Begin to install xcodeproj and rebuild shared folder"
+gem install xcodeproj && (curl -s https://raw.githubusercontent.com/flow-ci-plugin/flow-recreate-ios-project/master/run.rb > run.rb) && ruby run.rb $FLOW_IOS_PROJECT_PATH_NAME
+echo "installed xcodeproj and modified project config correctly"
 check_shared_scheme() {
   # check shared scheme
   echo $xcodeproj_shared_scheme_path
