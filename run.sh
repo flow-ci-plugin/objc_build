@@ -1,3 +1,23 @@
+# ************************************************************
+#
+# IOS build plugin enable to compile and package ipa from xcode project
+#  - Build by simulator if NOT upload p12 and provision profile into flow.ci
+#  - Build by iphonesdk if flow.ci has p12 and provision profile
+#
+#   Variables used:
+#     $FLOW_IOS_COMPILE_WORKSPACE
+#     $FLOW_IOS_COMPILE_PROJECT
+#     $FLOW_PROJECT_GIT_URL
+#     $FLOW_IOS_COMPILE_SCHEME
+#     $FLOW_IOS_COMPILE_CONFIGURATION
+#     $FLOW_IOS_EXPORT_METHOD
+#
+#   Outputs:
+#     $FLOW_IOS_IPA_NAME  the ipa file name, ex: my_app.ipa
+#     $FLOW_IOS_IPA_PATH  the full path of ios ipa file, ex: /xx/xx/my_app.ipa
+#
+# ************************************************************
+
 cd $FLOW_CURRENT_PROJECT_PATH
 echo "Begin to install xcodeproj and rebuild shared folder"
 gem install xcodeproj && (curl -s https://raw.githubusercontent.com/flow-ci-plugin/flow-recreate-ios-project/master/run.rb > run.rb) && ruby run.rb $FLOW_IOS_PROJECT_PATH_NAME
@@ -137,10 +157,10 @@ export FLOW_IOS_FASTLANE_PARAMS=$fastlane_params
 
 if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
   export FASTLANE_OPT_OUT_USAGE=1
-  export IPA_NAME=${FLOW_IOS_COMPILE_CONFIGURATION}-${FLOW_PROJECT_ID}-${FLOW_EVENT_NUMBER}.ipa
+  export FLOW_IOS_IPA_NAME=${FLOW_IOS_COMPILE_CONFIGURATION}-${FLOW_PROJECT_ID}-${FLOW_EVENT_NUMBER}.ipa
   export FLOW_IOS_IPA_PATH=${FLOW_OUTPUT_DIR}/${IPA_NAME}
 
-  fastlane gym $fastlane_params --output_directory ${FLOW_OUTPUT_DIR} --output_name ${IPA_NAME} --silent
+  fastlane gym $fastlane_params --output_directory ${FLOW_OUTPUT_DIR} --output_name ${FLOW_IOS_IPA_NAME} --silent
 else
   cmd="xcodebuild $params SYMROOT=${FLOW_OUTPUT_DIR} | tee ${FLOW_OUTPUT_DIR}/xcodebuild.log | xcpretty -s"
   echo $cmd
