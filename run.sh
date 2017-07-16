@@ -152,7 +152,7 @@ set_configuration
 set_code_identity
 set_export_method
 
-export FLOW_OUTPUT_DIR=${FLOW_CURRENT_PROJECT_PATH}/flow_output
+export FLOW_OUTPUT_DIR=${FLOW_CURRENT_PROJECT_PATH}flow_output
 export FLOW_IOS_FASTLANE_PARAMS=$fastlane_params
 
 if [ -n "$FLOW_IOS_CODE_SIGN_IDENTITY" ]; then
